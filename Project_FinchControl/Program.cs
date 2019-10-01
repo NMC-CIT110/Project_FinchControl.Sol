@@ -9,7 +9,7 @@ namespace Project_FinchControl
     //
     // Title: Finch Control
     // Description: Application to control the Finch robot with four modules;
-    //              Talent Show, Data Array, Alarm System, Finch Programming
+    //              Talent Show, Data Recorder, Alarm System, User Programming
     // Application Type: Console
     // Author: Velis, John
     // Dated Created: 10/1/2019
@@ -22,19 +22,175 @@ namespace Project_FinchControl
         static void Main(string[] args)
         {
             DisplayWelcomeScreen();
-
-
+            DisplayMenu();
             DisplayClosingScreen();
         }
+
+        /// <summary>
+        /// module: Talent Show
+        /// </summary>
+        /// <param name="finchRobot">finch robot object</param>
+        static void TalentShow(Finch finchRobot)
+        {
+            DisplayScreenHeader("Talent Show");
+
+            Console.WriteLine("The Finch robot will now show its talent.");
+            DisplayContinuePrompt();
+
+            for (int i = 0; i < 255; i++)
+            {
+                finchRobot.setLED(i, i, i);
+                finchRobot.noteOn(i * 100);
+            }
+
+            DisplayContinuePrompt();
+        }
+
+        /// <summary>
+        /// module: User Programming
+        /// </summary>
+        /// <param name="finchRobot">finch robot object</param>
+        static void UserProgramming(Finch finchRobot)
+        {
+            DisplayScreenHeader("User Programming");
+
+            Console.WriteLine("Method Not Implemented");
+
+            DisplayContinuePrompt();
+        }
+
+        /// <summary>
+        /// module: Alarm System
+        /// </summary>
+        /// <param name="finchRobot">finch robot object</param>
+        static void AlarmSystem(Finch finchRobot)
+        {
+            DisplayScreenHeader("Alarm System");
+
+            Console.WriteLine("Method Not Implemented");
+
+            DisplayContinuePrompt();
+        }
+
+        /// <summary>
+        /// module: Data Recorder
+        /// </summary>
+        /// <param name="finchRobot">finch robot object</param>
+        static void DataRecorder(Finch finchRobot)
+        {
+            DisplayScreenHeader("Data Recorder");
+
+            Console.WriteLine("Method Not Implemented");
+
+            DisplayContinuePrompt();
+        }
+
+        static void DisplayMenu()
+        {
+            //
+            // instantiate a Finch object
+            //
+            Finch finchRobot = new Finch();
+
+            bool finchRobotConnected = false;
+            bool quitApplication = false;
+            string menuChoice;
+
+            do
+            {
+                DisplayScreenHeader("Main Menu");
+
+                Console.WriteLine("a) Connect Finch Robot");
+                Console.WriteLine("b) Talent Show");
+                Console.WriteLine("c) Data Recorder");
+                Console.WriteLine("d) Alarm System");
+                Console.WriteLine("e) User Programming");
+                Console.WriteLine("d) Disconnect Finch Robot");
+                Console.WriteLine("q) Quit");
+                Console.Write("Enter Choice:");
+                menuChoice = Console.ReadLine();
+
+                switch (menuChoice)
+                {
+                    case "a":
+                    case "A":
+                        finchRobotConnected = DisplayConnectFinchRobot(finchRobot);
+                        break;
+                    case "b":
+                    case "B":
+                        if (finchRobotConnected) TalentShow(finchRobot);
+                        else DisplayConnectionIssueInformation();
+                        break;
+                    case "c":
+                    case "C":
+                        if (finchRobotConnected) DataRecorder(finchRobot);
+                        else DisplayConnectionIssueInformation();
+                        break;
+                    case "d":
+                    case "D":
+                        if (finchRobotConnected) AlarmSystem(finchRobot);
+                        else DisplayConnectionIssueInformation();
+                        break;
+                    case "e":
+                    case "E":
+                        if (finchRobotConnected) UserProgramming(finchRobot);
+                        else DisplayConnectionIssueInformation();
+                        break;
+                    case "f":
+                    case "F":
+                        DisplayDisconnectFinchRobot(finchRobot);
+                        break;
+                    case "q":
+                    case "Q":
+                        quitApplication = true;
+                        break;
+                    default:
+                        Console.WriteLine();
+                        Console.WriteLine("Please provide a proper menu choice.");
+                        DisplayContinuePrompt();
+                        break;
+                }
+            } while (!quitApplication);
+
+        }
+
+        /// <summary>
+        /// display disconnecting from the Finch robot
+        /// </summary>
+        /// <param name="finchRobot"></param>
+        static void DisplayDisconnectFinchRobot(Finch finchRobot)
+        {
+            DisplayScreenHeader("Disconnect the Finch Robot");
+
+            Console.WriteLine("The Finch robot is about to be disconnected.");
+            DisplayContinuePrompt();
+
+            finchRobot.disConnect();
+            Console.WriteLine("The Finch robot is now disconnected.");
+
+            DisplayContinuePrompt();
+        }
+
+        /// <summary>
+        /// displayed when a module is called and the Finch robot is not connected
+        /// </summary>
+        static void DisplayConnectionIssueInformation()
+        {
+            DisplayScreenHeader("Connection Information");
+            Console.WriteLine("The Finch robot is not connected. Please confirm that the USB cables are fully connected and choose \"a\" from the menu to connect the Finch robot.");
+            DisplayContinuePrompt();
+        }
+
 
         /// <summary>
         /// connect the Finch robot to the application
         /// </summary>
         /// <param name="finchRobot">finch robot object</param>
-        static void DisplayConnectFinchRobot(Finch finchRobot)
+        static bool DisplayConnectFinchRobot(Finch finchRobot)
         {
             const int MAX_ATTEMPTS = 3;
             int attempts = 1;
+            bool finchRobotConnected;
 
             DisplayScreenHeader("Connect Finch Robot");
 
@@ -57,15 +213,25 @@ namespace Project_FinchControl
             //
             // notify the user if the maximum attempts is exceeded
             //
-            if (attempts > MAX_ATTEMPTS)
+            if (attempts <= MAX_ATTEMPTS)
+            {
+                Console.WriteLine();
+                Console.WriteLine("\tFinch robot is now connected.");
+                Console.WriteLine();
+                finchRobotConnected = true;
+                finchRobot.setLED(0, 255, 0); // set nose to green
+            }
+            else
             {
                 Console.WriteLine();
                 Console.WriteLine("\tUnable to connect to the Finch robot. Please check the Finch robot or try a different one.");
                 Console.WriteLine();
-                DisplayContinuePrompt();
+                finchRobotConnected = false;
             }
 
             DisplayContinuePrompt();
+
+            return finchRobotConnected;
         }
 
         /// <summary>
