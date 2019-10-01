@@ -8,10 +8,11 @@ namespace Project_FinchControl
     // **************************************************
     //
     // Title: Finch Control
-    // Description: 
+    // Description: Application to control the Finch robot with four modules;
+    //              Talent Show, Data Array, Alarm System, Finch Programming
     // Application Type: Console
-    // Author: 
-    // Dated Created: 
+    // Author: Velis, John
+    // Dated Created: 10/1/2019
     // Last Modified: 
     //
     // **************************************************
