@@ -105,7 +105,7 @@ namespace Project_FinchControl
                 Console.WriteLine("c) Data Recorder");
                 Console.WriteLine("d) Alarm System");
                 Console.WriteLine("e) User Programming");
-                Console.WriteLine("d) Disconnect Finch Robot");
+                Console.WriteLine("f) Disconnect Finch Robot");
                 Console.WriteLine("q) Quit");
                 Console.Write("Enter Choice:");
                 menuChoice = Console.ReadLine();
@@ -166,6 +166,7 @@ namespace Project_FinchControl
             DisplayContinuePrompt();
 
             finchRobot.disConnect();
+            Console.WriteLine();
             Console.WriteLine("The Finch robot is now disconnected.");
 
             DisplayContinuePrompt();
@@ -189,7 +190,7 @@ namespace Project_FinchControl
         static bool DisplayConnectFinchRobot(Finch finchRobot)
         {
             const int MAX_ATTEMPTS = 3;
-            int attempts = 1;
+            int attempts = 0;
             bool finchRobotConnected;
 
             DisplayScreenHeader("Connect Finch Robot");
@@ -201,24 +202,32 @@ namespace Project_FinchControl
             //
             // loop until the Finch robot is connected or the maximum number of attempts is exceeded
             //
-            while (!finchRobot.connect() && attempts <= MAX_ATTEMPTS)
+            do
             {
-                Console.WriteLine();
-                Console.WriteLine("\tUnable to connect to the Finch robot. Please confirm all USB cords are plugged in.");
-                Console.WriteLine();
-                DisplayContinuePrompt();
+                //
+                // increment attempt counter
+                //
                 attempts++;
-            }
+
+                finchRobotConnected = finchRobot.connect();
+
+                if (!finchRobotConnected)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("\tUnable to connect to the Finch robot. Please confirm all USB cords are plugged in.");
+                    Console.WriteLine();
+                    DisplayContinuePrompt();
+                }
+            } while (!finchRobot.connect() && attempts < MAX_ATTEMPTS);
 
             //
             // notify the user if the maximum attempts is exceeded
             //
-            if (attempts <= MAX_ATTEMPTS)
+            if (finchRobotConnected)
             {
                 Console.WriteLine();
                 Console.WriteLine("\tFinch robot is now connected.");
                 Console.WriteLine();
-                finchRobotConnected = true;
                 finchRobot.setLED(0, 255, 0); // set nose to green
             }
             else
@@ -226,7 +235,6 @@ namespace Project_FinchControl
                 Console.WriteLine();
                 Console.WriteLine("\tUnable to connect to the Finch robot. Please check the Finch robot or try a different one.");
                 Console.WriteLine();
-                finchRobotConnected = false;
             }
 
             DisplayContinuePrompt();
@@ -268,7 +276,7 @@ namespace Project_FinchControl
         static void DisplayContinuePrompt()
         {
             Console.WriteLine();
-            Console.WriteLine("Press any key to continue.");
+            Console.WriteLine("\t\tPress any key to continue.");
             Console.ReadKey();
         }
 
